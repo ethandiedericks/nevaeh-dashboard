@@ -1,0 +1,52 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id          String   @id @default(uuid()) // Clerk user ID will be assigned manually
+  email       String   @unique
+  createdAt   DateTime @default(now())
+  contracts   Contract[]
+}
+
+model Contract {
+  id              String     @id @default(uuid())
+  clientName      String
+  clientEmail     String
+  contractPdfUrl  String
+  amount          Decimal
+  startDate       DateTime
+  endDate         DateTime
+  signedDate      DateTime
+  createdAt       DateTime   @default(now())
+  userId          String
+  user            User       @relation(fields: [userId], references: [id])
+  payments        Payment[]
+  invoices        Invoice[]
+}
+
+model Payment {
+  id         String   @id @default(uuid())
+  amountPaid Decimal
+  paidOn     DateTime
+  notes      String?
+  createdAt  DateTime @default(now())
+  contract   Contract @relation(fields: [contractId], references: [id])
+  contractId String
+}
+
+model Invoice {
+  id             String   @id @default(uuid())
+  invoicePdfUrl  String
+  amount         Decimal
+  issuedOn       DateTime
+  notes          String?
+  createdAt      DateTime @default(now())
+  contract       Contract @relation(fields: [contractId], references: [id])
+  contractId     String
+}

@@ -5,8 +5,8 @@ import {
   ClockIcon,
   XCircleIcon,
 } from "lucide-react";
-import { DashboardMetricCard } from "@/components/dashboard-metric-card";
 import { SimpleDataTable } from "@/components/simple-data-table";
+import { DashboardMetricCard } from "@/components/dashboard-metric-card";
 
 const statsData = [
   {

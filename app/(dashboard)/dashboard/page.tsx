@@ -7,10 +7,10 @@ import {
   DollarSignIcon,
 } from "lucide-react";
 import { CustomButton } from "@/components/custom-button";
-import { DashboardMetricCard } from "@/components/dashboard-metric-card";
 import { DashboardContractStatus } from "@/components/dashboard-contract-status";
 import { DashboardRecentPayments } from "@/components/dashboard-recent-payments";
 import { DashboardRevenueChart } from "@/components/dashboard-revenue-card";
+import { DashboardMetricCard } from "@/components/dashboard-metric-card";
 
 export default function DashboardPage() {
   return (
