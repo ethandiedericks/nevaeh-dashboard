@@ -7,164 +7,109 @@ import {
 } from "lucide-react";
 import { SimpleDataTable } from "@/components/simple-data-table";
 import { DashboardMetricCard } from "@/components/dashboard-metric-card";
+import { getContracts } from "@/app/actions/contracts";
 
-const statsData = [
-  {
-    title: "Active",
-    value: "2",
-    icon: CheckCircleIcon,
-  },
-  {
-    title: "Draft",
-    value: "1",
-    icon: FileTextIcon,
-  },
-  {
-    title: "Pending",
-    value: "1",
-    icon: ClockIcon,
-  },
-  {
-    title: "Expired",
-    value: "1",
-    icon: XCircleIcon,
-  },
-];
+export default async function ContractsPage() {
+  const contracts = await getContracts();
 
-const contractsData = [
-  {
-    id: 1,
-    title: "Software Development Agreement",
-    client: "Acme Corp",
-    value: "$50,000",
-    status: "Active",
-    startDate: "2024-01-01",
-    endDate: "2024-12-31",
-  },
-  {
-    id: 2,
-    title: "Consulting Services Contract",
-    client: "Tech Solutions",
-    value: "$25,000",
-    status: "Draft",
-    startDate: "2024-02-01",
-    endDate: "2024-08-01",
-  },
-  {
-    id: 3,
-    title: "Maintenance Agreement",
-    client: "Global Industries",
-    value: "$15,000",
-    status: "Expired",
-    startDate: "2023-06-01",
-    endDate: "2024-01-01",
-  },
-  {
-    id: 4,
-    title: "Design Services Contract",
-    client: "StartupXYZ",
-    value: "$30,000",
-    status: "Active",
-    startDate: "2024-01-15",
-    endDate: "2024-07-15",
-  },
-  {
-    id: 5,
-    title: "Support Agreement",
-    client: "Enterprise Ltd",
-    value: "$40,000",
-    status: "Pending",
-    startDate: "2024-03-01",
-    endDate: "2025-03-01",
-  },
-];
-
-function StatusBadge({ status }: { status: string }) {
-  const getStatusClasses = () => {
-    switch (status) {
-      case "Active":
-        return "bg-green-100 text-green-800";
-      case "Draft":
-        return "bg-yellow-100 text-yellow-800";
-      case "Pending":
-        return "bg-blue-100 text-blue-800";
-      case "Expired":
-        return "bg-red-100 text-red-800";
-      default:
-        return "bg-gray-100 text-gray-800";
-    }
-  };
-
-  return (
-    <span
-      className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getStatusClasses()}`}
-    >
-      {status}
-    </span>
+  const activeContracts = contracts.filter(
+    (contract) => new Date() < new Date(contract.endDate)
   );
-}
+  const expiredContracts = contracts.filter(
+    (contract) => new Date() >= new Date(contract.endDate)
+  );
+  const endingSoonContracts = contracts.filter((contract) => {
+    const endDate = new Date(contract.endDate);
+    const thirtyDaysFromNow = new Date();
+    thirtyDaysFromNow.setDate(thirtyDaysFromNow.getDate() + 30);
+    return endDate <= thirtyDaysFromNow && endDate > new Date();
+  });
 
-const tableColumns = [
-  {
-    key: "title",
-    label: "Contract",
-    render: (value: string, row: any) => (
-      <Link
-        href={`/dashboard/contracts/${row.id}`}
-        className="text-sm font-medium text-blue-600 hover:text-blue-900"
-      >
-        {value}
-      </Link>
-    ),
-  },
-  {
-    key: "client",
-    label: "Client",
-    render: (value: string) => (
-      <span className="text-sm text-gray-900">{value}</span>
-    ),
-  },
-  {
-    key: "value",
-    label: "Value",
-    render: (value: string) => (
-      <span className="text-sm text-gray-900">{value}</span>
-    ),
-  },
-  {
-    key: "status",
-    label: "Status",
-    render: (value: string) => <StatusBadge status={value} />,
-  },
-  {
-    key: "startDate",
-    label: "Start Date",
-    render: (value: string) => (
-      <span className="text-sm text-gray-500">{value}</span>
-    ),
-  },
-  {
-    key: "endDate",
-    label: "End Date",
-    render: (value: string) => (
-      <span className="text-sm text-gray-500">{value}</span>
-    ),
-  },
-  {
-    key: "actions",
-    label: "",
-    render: (value: any, row: any) => (
-      <Link
-        href={`/dashboard/contracts/${row.id}`}
-        className="text-blue-600 hover:text-blue-900 text-sm font-medium"
-      >
-        View
-      </Link>
-    ),
-  },
-];
+  const statsData = [
+    {
+      title: "Active",
+      value: activeContracts.length.toString(),
+      icon: CheckCircleIcon,
+    },
+    {
+      title: "Draft",
+      value: "0",
+      icon: FileTextIcon,
+    },
+    {
+      title: "Ending Soon",
+      value: endingSoonContracts.length.toString(),
+      icon: ClockIcon,
+    },
+    {
+      title: "Expired",
+      value: expiredContracts.length.toString(),
+      icon: XCircleIcon,
+    },
+  ];
 
-export default function ContractsPage() {
+  const tableColumns = [
+    {
+      key: "clientName",
+      label: "Contract",
+      render: (value: string, row: any) => (
+        <Link
+          href={`/dashboard/contracts/${row.id}`}
+          className="text-sm font-medium text-blue-600 hover:text-blue-900"
+        >
+          {value}
+        </Link>
+      ),
+    },
+    {
+      key: "clientEmail",
+      label: "Client Email",
+      render: (value: string) => (
+        <span className="text-sm text-gray-900">{value}</span>
+      ),
+    },
+    {
+      key: "amount",
+      label: "Value",
+      render: (value: number) => (
+        <span className="text-sm text-gray-900">${value.toString()}</span>
+      ),
+    },
+    {
+      key: "status",
+      label: "Status",
+      render: (value: string, row: any) => (
+        <span
+          className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
+            new Date() < new Date(row.endDate)
+              ? "bg-green-100 text-green-800"
+              : "bg-red-100 text-red-800"
+          }`}
+        >
+          {new Date() < new Date(row.endDate) ? "Active" : "Expired"}
+        </span>
+      ),
+    },
+    {
+      key: "startDate",
+      label: "Start Date",
+      render: (value: string) => (
+        <span className="text-sm text-gray-500">
+          {new Date(value).toLocaleDateString()}
+        </span>
+      ),
+    },
+    {
+      key: "endDate",
+      label: "End Date",
+      render: (value: string) => (
+        <span className="text-sm text-gray-500">
+          {new Date(value).toLocaleDateString()}
+        </span>
+      ),
+    },
+  ];
+
   return (
     <>
       {/* Header */}
@@ -191,7 +136,7 @@ export default function ContractsPage() {
       {/* Contracts table */}
       <SimpleDataTable
         title="All Contracts"
-        data={contractsData}
+        data={contracts}
         columns={tableColumns}
         addButton={{
           label: "New contract",
