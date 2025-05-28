@@ -86,7 +86,7 @@ export default function NewInvoicePage() {
       {/* Header */}
       <div className="w-full mx-auto mb-6">
         <Link
-          href="/dashboard/invoices"
+          href="/dashboard/invoice"
           className="inline-flex items-center text-sm font-medium text-gray-500 hover:text-gray-700 mb-4"
         >
           <ArrowLeft className="h-4 w-4 mr-2" />
@@ -322,7 +322,7 @@ export default function NewInvoicePage() {
 
           <div className="flex justify-end space-x-3">
             <Link
-              href="/dashboard/invoices"
+              href="/dashboard/invoice"
               className="inline-flex justify-center py-2 px-4 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
             >
               Cancel

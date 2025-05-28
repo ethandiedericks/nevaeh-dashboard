@@ -22,7 +22,7 @@ model Contract {
   clientName     String
   clientEmail    String
   contractPdfUrl String
-  amount         Decimal
+  amount         Float
   startDate      DateTime
   endDate        DateTime
   signedDate     DateTime
@@ -37,7 +37,7 @@ model Contract {
 
 model Payment {
   id         String   @id @default(uuid())
-  amountPaid Decimal
+  amountPaid Float
   paidOn     DateTime
   notes      String?
   createdAt  DateTime @default(now())
@@ -50,7 +50,7 @@ model Payment {
 model Invoice {
   id            String   @id @default(uuid())
   invoicePdfUrl String
-  amount        Decimal
+  amount        Float
   issuedOn      DateTime
   notes         String?
   createdAt     DateTime @default(now())

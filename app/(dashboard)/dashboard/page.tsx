@@ -1,4 +1,5 @@
 import Link from "next/link";
+
 import {
   PlusIcon,
   CreditCardIcon,
@@ -24,19 +25,19 @@ export default function DashboardPage() {
           </p>
         </div>
         <div className="flex items-center space-x-3">
-          <Link href="/dashboard/contracts/new">
+          <Link href="/dashboard/contract/new">
             <CustomButton variant="primary">
               <PlusIcon className="h-4 w-4 mr-2" />
               New Contract
             </CustomButton>
           </Link>
-          <Link href="/dashboard/payments/new">
+          <Link href="/dashboard/payment/new">
             <CustomButton variant="outline">
               <CreditCardIcon className="h-4 w-4 mr-2" />
               Record Payment
             </CustomButton>
           </Link>
-          <Link href="/dashboard/invoices/new">
+          <Link href="/dashboard/invoice/new">
             <CustomButton variant="outline">
               <FileTextIcon className="h-4 w-4 mr-2" />
               Generate Invoice

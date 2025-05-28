@@ -1,29 +1,57 @@
-import { ArrowLeft, SquarePen } from "lucide-react";
+"use client";
+
+import { ArrowLeft, SquarePen, Trash } from "lucide-react";
 import Link from "next/link";
-import { getContract } from "@/app/actions/contracts";
-import { notFound } from "next/navigation";
 
 function classNames(...classes: string[]) {
   return classes.filter(Boolean).join(" ");
 }
 
-export default async function ContractDetailPage({
-  params,
+type Payment = {
+  id: string;
+  createdAt: Date;
+  amountPaid: number;
+  paidOn: Date;
+  notes: string | null;
+  contractId: string;
+};
+
+type Invoice = {
+  id: string;
+  createdAt: Date;
+  amount: number;
+  notes: string | null;
+  contractId: string;
+  invoicePdfUrl: string;
+  issuedOn: Date;
+};
+
+type Contract = {
+  id: string;
+  clientName: string;
+  clientEmail: string;
+  contractPdfUrl: string;
+  amount: number;
+  startDate: Date;
+  endDate: Date;
+  signedDate: Date;
+  createdAt: Date;
+  userId: string;
+  payments: Payment[];
+  invoices: Invoice[];
+};
+
+export default function ContractDetailClient({
+  contract,
 }: {
-  params: { id: string };
+  contract: Contract;
 }) {
-  const contract = await getContract(params.id);
-
-  if (!contract) {
-    notFound();
-  }
-
   return (
     <>
       {/* Header */}
       <div className="mb-6">
         <Link
-          href="/dashboard/contracts"
+          href="/dashboard/contract"
           className="inline-flex items-center text-sm font-medium text-gray-500 hover:text-gray-700 mb-4"
         >
           <ArrowLeft className="h-4 w-4 mr-2" />
@@ -38,10 +66,16 @@ export default async function ContractDetailPage({
               Contract #{contract.id}
             </p>
           </div>
-          <button className="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-            <SquarePen className="h-4 w-4 mr-2" />
-            Edit Contract
-          </button>
+          <div className="space-x-2">
+            <button className="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 ">
+              <SquarePen className="h-4 w-4 mr-2" />
+              Edit Contract
+            </button>
+            <button className="inline-flex items-center px-4 py-2 border  shadow-sm text-sm font-medium rounded-md text-gray-50 bg-red-600 hover:bg-red-700 ">
+              <Trash className="h-4 w-4 mr-2" />
+              Delete Contract
+            </button>
+          </div>
         </div>
       </div>
 
@@ -83,19 +117,31 @@ export default async function ContractDetailPage({
             <div>
               <dt className="text-sm font-medium text-gray-500">Start Date</dt>
               <dd className="mt-1 text-sm text-gray-900">
-                {new Date(contract.startDate).toLocaleDateString()}
+                {new Date(contract.startDate).toLocaleDateString("en-US", {
+                  month: "2-digit",
+                  day: "2-digit",
+                  year: "numeric",
+                })}
               </dd>
             </div>
             <div>
               <dt className="text-sm font-medium text-gray-500">End Date</dt>
               <dd className="mt-1 text-sm text-gray-900">
-                {new Date(contract.endDate).toLocaleDateString()}
+                {new Date(contract.endDate).toLocaleDateString("en-US", {
+                  month: "2-digit",
+                  day: "2-digit",
+                  year: "numeric",
+                })}
               </dd>
             </div>
             <div>
               <dt className="text-sm font-medium text-gray-500">Created</dt>
               <dd className="mt-1 text-sm text-gray-900">
-                {new Date(contract.createdAt).toLocaleDateString()}
+                {new Date(contract.createdAt).toLocaleDateString("en-US", {
+                  month: "2-digit",
+                  day: "2-digit",
+                  year: "numeric",
+                })}
               </dd>
             </div>
           </div>
@@ -119,7 +165,11 @@ export default async function ContractDetailPage({
                     ${payment.amountPaid.toString()}
                   </p>
                   <p className="text-sm text-gray-500">
-                    {new Date(payment.paidOn).toLocaleDateString()}
+                    {new Date(payment.paidOn).toLocaleDateString("en-US", {
+                      month: "2-digit",
+                      day: "2-digit",
+                      year: "numeric",
+                    })}
                   </p>
                 </div>
                 {payment.notes && (
@@ -148,7 +198,11 @@ export default async function ContractDetailPage({
                     ${invoice.amount.toString()}
                   </p>
                   <p className="text-sm text-gray-500">
-                    {new Date(invoice.issuedOn).toLocaleDateString()}
+                    {new Date(invoice.issuedOn).toLocaleDateString("en-US", {
+                      month: "2-digit",
+                      day: "2-digit",
+                      year: "numeric",
+                    })}
                   </p>
                 </div>
                 {invoice.notes && (

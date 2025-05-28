@@ -174,7 +174,7 @@ export default function NewPaymentPage() {
           </div>
           {/* Action Buttons */}
           <div className="flex justify-end space-x-3 mt-8">
-            <Link href="/dashboard/payments">
+            <Link href="/dashboard/payment">
               <CustomButton variant="outline">Cancel</CustomButton>
             </Link>
             <CustomButton type="submit" variant="primary">

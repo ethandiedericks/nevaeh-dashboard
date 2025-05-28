@@ -144,7 +144,7 @@ export default function PaymentsPage() {
         columns={tableColumns}
         addButton={{
           label: "Add payment",
-          href: "/dashboard/payments/new",
+          href: "/dashboard/payment/new",
         }}
       />
     </>

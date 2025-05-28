@@ -4,24 +4,23 @@ import type React from "react";
 import { useState } from "react";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
-import {
-  Menu,
-  X,
-  Home,
-  FileText,
-  CreditCard,
-  Receipt,
-  Bell,
-} from "lucide-react";
 
+import { Menu, X, Home, FileText, CreditCard, Receipt } from "lucide-react";
 import { SearchIcon } from "lucide-react";
 import { Suspense } from "react";
+import {
+  SignedIn,
+  SignedOut,
+  SignInButton,
+  UserButton,
+  useUser,
+} from "@clerk/nextjs";
 
 const navigationItems = [
   { name: "Dashboard", href: "/dashboard", icon: Home },
-  { name: "Contracts", href: "/dashboard/contracts", icon: FileText },
-  { name: "Payments", href: "/dashboard/payments", icon: CreditCard },
-  { name: "Invoices", href: "/dashboard/invoices", icon: Receipt },
+  { name: "Contracts", href: "/dashboard/contract", icon: FileText },
+  { name: "Payments", href: "/dashboard/payment", icon: CreditCard },
+  { name: "Invoices", href: "/dashboard/invoice", icon: Receipt },
 ];
 
 function classNames(...classes: string[]) {
@@ -35,6 +34,7 @@ export default function DashboardLayout({
 }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const pathname = usePathname();
+  const { user } = useUser();
 
   const isActiveRoute = (href: string) => {
     if (href === "/dashboard") {
@@ -152,6 +152,26 @@ export default function DashboardLayout({
               </li>
             </ul>
           </nav>
+          <div className="flex flex-col w-full items-start p-4">
+            {/* Left: Show Sign In Button when Signed Out */}
+            <div>
+              <SignedOut>
+                <SignInButton />
+              </SignedOut>
+            </div>
+
+            {/* Right: Show User Button above email when Signed In */}
+            <div>
+              <SignedIn>
+                <div className="flex flex-col items-start gap-2">
+                  <UserButton />
+                  <span className="text-black text-sm">
+                    {user?.emailAddresses[0].emailAddress}
+                  </span>
+                </div>
+              </SignedIn>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -177,14 +197,6 @@ export default function DashboardLayout({
                 placeholder="Search..."
                 type="search"
               />
-            </div>
-            <div className="flex items-center gap-x-4 lg:gap-x-6">
-              <button
-                type="button"
-                className="-m-2.5 p-2.5 text-gray-400 hover:text-gray-500"
-              >
-                <Bell className="h-6 w-6" />
-              </button>
             </div>
           </div>
         </div>

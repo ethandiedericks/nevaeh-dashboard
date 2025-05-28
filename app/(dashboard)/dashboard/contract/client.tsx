@@ -1,16 +1,25 @@
-import Link from "next/link";
-import {
-  CheckCircleIcon,
-  FileTextIcon,
-  ClockIcon,
-  XCircleIcon,
-} from "lucide-react";
+"use client";
+
+import { useRouter } from "next/navigation";
+import { CheckCircleIcon, ClockIcon, XCircleIcon } from "lucide-react";
 import { SimpleDataTable } from "@/components/simple-data-table";
 import { DashboardMetricCard } from "@/components/dashboard-metric-card";
-import { getContracts } from "@/app/actions/contracts";
 
-export default async function ContractsPage() {
-  const contracts = await getContracts();
+interface Contract {
+  id: string;
+  clientName: string;
+  clientEmail: string;
+  amount: number;
+  startDate: Date;
+  endDate: Date;
+}
+
+interface Props {
+  contracts: Contract[];
+}
+
+export default function ContractsClientPage({ contracts }: Props) {
+  const router = useRouter();
 
   const activeContracts = contracts.filter(
     (contract) => new Date() < new Date(contract.endDate)
@@ -32,11 +41,6 @@ export default async function ContractsPage() {
       icon: CheckCircleIcon,
     },
     {
-      title: "Draft",
-      value: "0",
-      icon: FileTextIcon,
-    },
-    {
       title: "Ending Soon",
       value: endingSoonContracts.length.toString(),
       icon: ClockIcon,
@@ -52,13 +56,8 @@ export default async function ContractsPage() {
     {
       key: "clientName",
       label: "Contract",
-      render: (value: string, row: any) => (
-        <Link
-          href={`/dashboard/contracts/${row.id}`}
-          className="text-sm font-medium text-blue-600 hover:text-blue-900"
-        >
-          {value}
-        </Link>
+      render: (value: string) => (
+        <span className="text-sm text-gray-900">{value}</span>
       ),
     },
     {
@@ -78,7 +77,7 @@ export default async function ContractsPage() {
     {
       key: "status",
       label: "Status",
-      render: (value: string, row: any) => (
+      render: (_: string, row: Contract) => (
         <span
           className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
             new Date() < new Date(row.endDate)
@@ -95,7 +94,11 @@ export default async function ContractsPage() {
       label: "Start Date",
       render: (value: string) => (
         <span className="text-sm text-gray-500">
-          {new Date(value).toLocaleDateString()}
+          {new Date(value).toLocaleDateString("en-US", {
+            month: "2-digit",
+            day: "2-digit",
+            year: "numeric",
+          })}
         </span>
       ),
     },
@@ -104,7 +107,11 @@ export default async function ContractsPage() {
       label: "End Date",
       render: (value: string) => (
         <span className="text-sm text-gray-500">
-          {new Date(value).toLocaleDateString()}
+          {new Date(value).toLocaleDateString("en-US", {
+            month: "2-digit",
+            day: "2-digit",
+            year: "numeric",
+          })}
         </span>
       ),
     },
@@ -112,7 +119,6 @@ export default async function ContractsPage() {
 
   return (
     <>
-      {/* Header */}
       <div className="mb-8">
         <h1 className="text-2xl font-bold text-gray-900">Contracts</h1>
         <p className="text-gray-600">
@@ -121,8 +127,7 @@ export default async function ContractsPage() {
         </p>
       </div>
 
-      {/* Stats */}
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-4 mb-8">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-3 mb-8">
         {statsData.map((stat, index) => (
           <DashboardMetricCard
             key={index}
@@ -133,15 +138,17 @@ export default async function ContractsPage() {
         ))}
       </div>
 
-      {/* Contracts table */}
       <SimpleDataTable
         title="All Contracts"
         data={contracts}
         columns={tableColumns}
         addButton={{
           label: "New contract",
-          href: "/dashboard/contracts/new",
+          href: "/dashboard/contract/new",
         }}
+        onRowClick={(row: Contract) =>
+          router.push(`/dashboard/contract/${row.id}`)
+        }
       />
     </>
   );

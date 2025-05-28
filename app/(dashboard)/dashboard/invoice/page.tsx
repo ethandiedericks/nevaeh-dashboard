@@ -152,7 +152,7 @@ export default function InvoicesPage() {
         columns={tableColumns}
         addButton={{
           label: "New invoice",
-          href: "/dashboard/invoices/new",
+          href: "/dashboard/invoice/new",
         }}
       />
     </>

@@ -21,6 +21,7 @@ interface SimpleDataTableProps {
     label: string;
     href: string;
   };
+  onRowClick?: (row: any) => void;
 }
 
 export function SimpleDataTable({
@@ -30,6 +31,7 @@ export function SimpleDataTable({
   columns,
   addButton,
   viewAllButton,
+  onRowClick,
 }: SimpleDataTableProps) {
   return (
     <div className="bg-white shadow rounded-lg">
@@ -70,9 +72,16 @@ export function SimpleDataTable({
                 ))}
               </tr>
             </thead>
+
             <tbody className="bg-white divide-y divide-gray-200">
               {data.map((row, index) => (
-                <tr key={index} className="hover:bg-gray-50">
+                <tr
+                  key={index}
+                  className={`hover:bg-gray-50 ${
+                    onRowClick ? "cursor-pointer" : ""
+                  }`}
+                  onClick={() => onRowClick?.(row)}
+                >
                   {columns.map((column) => (
                     <td
                       key={column.key}
