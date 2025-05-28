@@ -1,7 +1,10 @@
 "use client";
 
+import { deleteContract } from "@/app/actions/contract";
 import { ArrowLeft, SquarePen, Trash } from "lucide-react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
 
 function classNames(...classes: string[]) {
   return classes.filter(Boolean).join(" ");
@@ -46,6 +49,19 @@ export default function ContractDetailClient({
 }: {
   contract: Contract;
 }) {
+  const router = useRouter();
+  const [open, setOpen] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const handleDelete = async () => {
+    setLoading(true);
+    const result = await deleteContract(contract.id);
+    setLoading(false);
+    if (result.success) {
+      router.push("/dashboard/contract");
+    } else {
+      alert(result.error || "Failed to delete");
+    }
+  };
   return (
     <>
       {/* Header */}
@@ -67,17 +83,50 @@ export default function ContractDetailClient({
             </p>
           </div>
           <div className="space-x-2">
-            <button className="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 ">
+            <Link
+              href={`/dashboard/contract/${contract.id}/edit`}
+              className="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50"
+            >
               <SquarePen className="h-4 w-4 mr-2" />
               Edit Contract
-            </button>
-            <button className="inline-flex items-center px-4 py-2 border  shadow-sm text-sm font-medium rounded-md text-gray-50 bg-red-600 hover:bg-red-700 ">
+            </Link>
+
+            <button
+              className="inline-flex items-center px-4 py-2 border  shadow-sm text-sm font-medium rounded-md text-gray-50 bg-red-600 hover:bg-red-700 "
+              onClick={() => setOpen(true)}
+            >
               <Trash className="h-4 w-4 mr-2" />
               Delete Contract
             </button>
           </div>
         </div>
       </div>
+      {open && (
+  <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+    <div className="bg-white rounded-lg shadow-lg max-w-md w-full p-6">
+      <h2 className="text-lg font-semibold text-gray-900 mb-2">Are you sure?</h2>
+      <p className="text-sm text-gray-600 mb-6">
+        This action cannot be undone.
+      </p>
+      <div className="flex justify-end space-x-3">
+        <button
+          onClick={() => setOpen(false)}
+          className="px-4 py-2 text-sm text-gray-700 border border-gray-300 rounded-md hover:bg-gray-100"
+        >
+          Cancel
+        </button>
+        <button
+          onClick={handleDelete}
+          disabled={loading}
+          className="px-4 py-2 text-sm text-white bg-red-600 rounded-md hover:bg-red-700 disabled:opacity-50"
+        >
+          {loading ? "Deleting..." : "Delete"}
+        </button>
+      </div>
+    </div>
+  </div>
+)}
+
 
       {/* Contract Details */}
       <div className="bg-white shadow rounded-lg mb-6">

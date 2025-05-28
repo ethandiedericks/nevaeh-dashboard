@@ -14,6 +14,15 @@ interface ContractData {
   signedDate: Date;
 }
 
+interface ContractEditData {
+  clientName?: string;
+  clientEmail?: string;
+  amount?: number;
+  startDate?: string;
+  endDate?: string;
+  pdfUrl?: string;
+}
+
 interface ContractResult {
   data?: ContractData;
   error?: string;
@@ -121,5 +130,28 @@ export async function getContract(id: string) {
   } catch (error) {
     console.error("Error fetching contract:", error);
     throw new Error("Failed to fetch contract");
+  }
+}
+
+export async function editContract(id: string, data: ContractEditData) {
+  try {
+    await db.contract.update({
+      where: { id },
+      data,
+    });
+    return { success: true };
+  } catch (error) {
+    console.error("Edit failed:", error);
+    return { success: false, error: "Failed to update contract." };
+  }
+}
+
+export async function deleteContract(id: string) {
+  try {
+    await db.contract.delete({ where: { id } });
+    return { success: true };
+  } catch (error) {
+    console.error("Delete failed:", error);
+    return { success: false, error: "Failed to delete contract." };
   }
 }

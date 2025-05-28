@@ -5,8 +5,8 @@ import { useState } from "react";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
 
-import { Menu, X, Home, FileText, CreditCard, Receipt } from "lucide-react";
-import { SearchIcon } from "lucide-react";
+import { X, Home, FileText, CreditCard, Receipt } from "lucide-react";
+
 import { Suspense } from "react";
 import {
   SignedIn,
@@ -177,30 +177,6 @@ export default function DashboardLayout({
 
       {/* Main content */}
       <div className="lg:pl-64">
-        {/* Header */}
-        <div className="sticky top-0 z-40 flex h-16 shrink-0 items-center gap-x-4 border-b border-gray-200 bg-white px-4 shadow-sm sm:gap-x-6 sm:px-6 lg:px-8">
-          <button
-            type="button"
-            className="-m-2.5 p-2.5 text-gray-700 lg:hidden"
-            onClick={() => setSidebarOpen(true)}
-          >
-            <Menu className="h-6 w-6" />
-          </button>
-
-          <div className="h-6 w-px bg-gray-200 lg:hidden" />
-
-          <div className="flex flex-1 gap-x-4 self-stretch lg:gap-x-6">
-            <div className="relative flex flex-1 max-w-md">
-              <SearchIcon className="pointer-events-none absolute inset-y-0 left-0 h-full w-5 text-gray-400 ml-3" />
-              <input
-                className="block h-full w-full border-0 py-0 pl-10 pr-0 text-gray-900 placeholder:text-gray-400 focus:ring-0 sm:text-sm bg-transparent focus:outline-none"
-                placeholder="Search..."
-                type="search"
-              />
-            </div>
-          </div>
-        </div>
-
         {/* Main content area */}
         <main className="py-6">
           <div className="mx-auto w-full px-4 sm:px-6 lg:px-8">

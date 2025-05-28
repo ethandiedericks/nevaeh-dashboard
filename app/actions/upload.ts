@@ -31,8 +31,6 @@ export async function uploadContractPdf(file: File): Promise<UploadResult> {
       Key: fileName,
       Body: buffer,
       ContentType: file.type,
-      // Optional: Set ACL for public read access if needed
-      ACL: "public-read",
     });
 
     await s3Client.send(command);

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import type React from "react";
 import Link from "next/link";
 import { CustomButton } from "./custom-button";
