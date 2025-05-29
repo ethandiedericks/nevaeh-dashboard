@@ -15,6 +15,8 @@ import {
   UserButton,
   useUser,
 } from "@clerk/nextjs";
+import Image from "next/image";
+import logo from "@/public/Full Logo Black.webp";
 
 const navigationItems = [
   { name: "Dashboard", href: "/dashboard", icon: Home },
@@ -58,12 +60,7 @@ export default function DashboardLayout({
         <div className="fixed inset-y-0 left-0 z-50 w-64 bg-white px-6 py-6">
           <div className="flex items-center justify-between">
             <div className="flex items-center">
-              <div className="h-8 w-8 bg-gray-900 rounded-lg flex items-center justify-center">
-                <span className="text-white text-sm font-bold">RM</span>
-              </div>
-              <span className="ml-2 text-lg font-semibold text-gray-900">
-                Retainer Manager
-              </span>
+              <Image src={logo} alt="Logo" width={3217} height={246} />
             </div>
             <button
               type="button"
@@ -111,12 +108,7 @@ export default function DashboardLayout({
       <div className="hidden lg:fixed lg:inset-y-0 lg:z-50 lg:flex lg:w-64 lg:flex-col">
         <div className="flex grow flex-col gap-y-5 overflow-y-auto bg-white px-6 py-6 border-r border-gray-200">
           <div className="flex items-center">
-            <div className="h-8 w-8 bg-gray-900 rounded-lg flex items-center justify-center">
-              <span className="text-white text-sm font-bold">RM</span>
-            </div>
-            <span className="ml-2 text-lg font-semibold text-gray-900">
-              Retainer Manager
-            </span>
+            <Image src={logo} alt="Logo" width={3217} height={246} />
           </div>
           <nav className="flex flex-1 flex-col">
             <ul className="flex flex-1 flex-col gap-y-7">

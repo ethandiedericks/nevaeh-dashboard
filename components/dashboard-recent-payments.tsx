@@ -1,67 +1,47 @@
+"use client";
+
 interface Payment {
   id: string;
-  company: string;
-  initials: string;
-  date: string;
-  amount: string;
-  status: "Paid";
+  contract: { clientName: string };
+  paidOn: Date;
+  amountPaid: number;
+  notes?: string | null;
 }
 
-const payments: Payment[] = [
-  {
-    id: "1",
-    company: "Acme Corp",
-    initials: "Ac",
-    date: "May 15, 2025",
-    amount: "$4,500",
-    status: "Paid",
-  },
-  {
-    id: "2",
-    company: "Globex Inc",
-    initials: "Gl",
-    date: "May 12, 2025",
-    amount: "$3,750",
-    status: "Paid",
-  },
-  {
-    id: "3",
-    company: "Initech",
-    initials: "In",
-    date: "May 10, 2025",
-    amount: "$5,000",
-    status: "Paid",
-  },
-];
+interface Props {
+  data: Payment[];
+}
 
-export function DashboardRecentPayments() {
+export function DashboardRecentPayments({ data }: Props) {
   return (
     <div className="bg-white rounded-lg border border-gray-200 p-6">
       <div className="mb-6">
         <h3 className="text-lg font-semibold text-gray-900">Recent Payments</h3>
       </div>
       <div className="space-y-4">
-        {payments.map((payment) => (
+        {data.map((payment) => (
           <div key={payment.id} className="flex items-center justify-between">
             <div className="flex items-center">
               <div className="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center mr-3">
                 <span className="text-sm font-medium text-gray-600">
-                  {payment.initials}
+                  {payment.contract.clientName.slice(0, 2)}
                 </span>
               </div>
               <div>
                 <p className="text-sm font-medium text-gray-900">
-                  {payment.company}
+                  {payment.contract.clientName}
                 </p>
-                <p className="text-xs text-gray-500">{payment.date}</p>
+                <p className="text-xs text-gray-500">
+                  {new Date(payment.paidOn).toLocaleDateString()}
+                </p>
               </div>
             </div>
             <div className="flex items-center">
               <span className="text-sm font-medium text-gray-900 mr-3">
-                {payment.amount}
+                ${payment.amountPaid.toLocaleString()}
               </span>
               <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                {payment.status}
+                Paid
               </span>
             </div>
           </div>

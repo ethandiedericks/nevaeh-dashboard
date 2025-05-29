@@ -8,7 +8,7 @@ interface PaymentData {
   id: string;
   amountPaid: number;
   paidOn: Date;
-  notes: string | null; // Changed from string | undefined to match Prisma schema
+  notes: string | null;
   contractId: string;
   contract: {
     clientName: string;
@@ -30,13 +30,11 @@ interface PaymentResult {
 export async function createPayment(
   formData: FormData
 ): Promise<PaymentResult> {
-  // Extract form fields
   const contractId = formData.get("contract") as string;
   const amountPaid = parseFloat(formData.get("paymentAmount") as string);
   const paidOn = formData.get("paymentDate") as string;
   const notes = formData.get("notes") as string;
 
-  // Validate fields
   if (!contractId || !amountPaid || !paidOn) {
     return { error: "Contract ID, amount, and payment date are required." };
   }
@@ -53,7 +51,6 @@ export async function createPayment(
     return { error: "User not found." };
   }
 
-  // Verify contract belongs to the user
   const contract = await db.contract.findFirst({
     where: {
       id: contractId,
@@ -71,7 +68,7 @@ export async function createPayment(
         contractId,
         amountPaid,
         paidOn: parsedPaidOn,
-        notes: notes || null, // Use null instead of empty string to match schema
+        notes: notes || null,
       },
       include: {
         contract: {
@@ -121,11 +118,7 @@ export async function getPayment(id: string) {
         },
       },
       include: {
-        contract: {
-          select: {
-            clientName: true,
-          },
-        },
+        contract: true,
       },
     });
 
@@ -145,7 +138,6 @@ export async function editPayment(id: string, data: PaymentEditData) {
     const { userId } = await auth();
     if (!userId) throw new Error("Unauthorized");
 
-    // Validate contractId if provided
     if (data.contractId) {
       const contract = await db.contract.findFirst({
         where: {
@@ -161,7 +153,6 @@ export async function editPayment(id: string, data: PaymentEditData) {
       }
     }
 
-    // Validate amount if provided
     if (
       data.amountPaid !== undefined &&
       (isNaN(data.amountPaid) || data.amountPaid <= 0)
@@ -169,7 +160,6 @@ export async function editPayment(id: string, data: PaymentEditData) {
       return { success: false, error: "Invalid payment amount." };
     }
 
-    // Validate date if provided
     if (data.paidOn) {
       const parsedPaidOn = new Date(data.paidOn);
       if (isNaN(parsedPaidOn.getTime())) {
@@ -183,7 +173,7 @@ export async function editPayment(id: string, data: PaymentEditData) {
       data: {
         amountPaid: data.amountPaid,
         paidOn: data.paidOn ? new Date(data.paidOn) : undefined,
-        notes: data.notes ?? null, // Handle undefined as null to match schema
+        notes: data.notes ?? null,
         contractId: data.contractId,
       },
     });
@@ -205,4 +195,49 @@ export async function deletePayment(id: string) {
     console.error("Delete failed:", error);
     return { success: false, error: "Failed to delete payment." };
   }
+}
+
+export async function getRecentPayments(limit = 5) {
+  const { userId } = await auth();
+  if (!userId) throw new Error("Unauthorized");
+
+  return db.payment.findMany({
+    where: { contract: { user: { clerkUserId: userId } } },
+    take: limit,
+    orderBy: { paidOn: "desc" },
+    include: {
+      contract: {
+        select: {
+          clientName: true,
+        },
+      },
+    },
+  });
+}
+
+export async function getMonthlyRevenue() {
+  const { userId } = await auth();
+  if (!userId) throw new Error("Unauthorized");
+
+  const payments = await db.payment.findMany({
+    where: { contract: { user: { clerkUserId: userId } } },
+  });
+
+  const revenueByMonth: { [key: string]: number } = {};
+
+  payments.forEach((payment) => {
+    const date = new Date(payment.paidOn);
+    const month = date.toLocaleString("default", { month: "short" });
+    revenueByMonth[month] = (revenueByMonth[month] || 0) + payment.amountPaid;
+  });
+
+  const months = [
+    "Jan", "Feb", "Mar", "Apr", "May", "Jun",
+    "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
+  ];
+
+  return months.map(month => ({
+    month,
+    revenue: revenueByMonth[month] || 0,
+  }));
 }

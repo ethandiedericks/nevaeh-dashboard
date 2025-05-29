@@ -31,7 +31,7 @@ interface ContractResult {
 export async function createContract(
   formData: FormData
 ): Promise<ContractResult> {
-  // Extract form fields
+
   const clientName = formData.get("clientName") as string;
   const clientEmail = formData.get("clientEmail") as string;
   const contractPdfUrl = formData.get("contractPdfUrl") as string;
@@ -40,7 +40,7 @@ export async function createContract(
   const endDate = formData.get("endDate") as string;
   const signedDate = formData.get("signedDate") as string;
 
-  // Validate fields
+
   if (
     !clientName ||
     !clientEmail ||
@@ -154,4 +154,40 @@ export async function deleteContract(id: string) {
     console.error("Delete failed:", error);
     return { success: false, error: "Failed to delete contract." };
   }
+}
+
+export async function getContractStatusSummary() {
+  const { userId } = await auth();
+  if (!userId) throw new Error("Unauthorized");
+
+  const contracts = await db.contract.findMany({ where: { userId } });
+  const now = new Date();
+
+  let active = 0;
+  let endingSoon = 0;
+  let expired = 0;
+
+  contracts.forEach((contract) => {
+    const end = new Date(contract.endDate);
+    const daysLeft = (end.getTime() - now.getTime()) / (1000 * 60 * 60 * 24);
+    if (daysLeft < 0) expired++;
+    else if (daysLeft <= 30) endingSoon++;
+    else active++;
+  });
+
+  return { active, endingSoon, expired };
+}
+
+export async function getContractMetrics() {
+  const { userId } = await auth();
+  if (!userId) throw new Error("Unauthorized");
+
+  const contracts = await db.contract.findMany({ where: { userId } });
+  const totalContracts = contracts.length;
+  const totalAmount = contracts.reduce((sum, c) => sum + c.amount, 0);
+
+  return {
+    totalContracts,
+    totalAmount,
+  };
 }

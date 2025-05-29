@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import {
@@ -10,20 +11,12 @@ import {
   Tooltip,
 } from "recharts";
 
-const chartData = [
-  { month: "Jan", revenue: 4000 },
-  { month: "Feb", revenue: 4500 },
-  { month: "Mar", revenue: 5000 },
-  { month: "Apr", revenue: 4800 },
-  { month: "May", revenue: 5300 },
-  { month: "Jun", revenue: 6000 },
-  { month: "Jul", revenue: 5500 },
-  { month: "Aug", revenue: 5700 },
-  { month: "Sep", revenue: 6200 },
-  { month: "Oct", revenue: 6500 },
-  { month: "Nov", revenue: 6800 },
-  { month: "Dec", revenue: 7000 },
-];
+interface Props {
+  data: {
+    month: string;
+    revenue: number;
+  }[];
+}
 
 const CustomTooltip = ({ active, payload, label }: any) => {
   if (active && payload && payload.length) {
@@ -36,7 +29,7 @@ const CustomTooltip = ({ active, payload, label }: any) => {
   return null;
 };
 
-export function DashboardRevenueChart() {
+export function DashboardRevenueChart({ data }: Props) {
   return (
     <div className="bg-white rounded-lg border border-gray-200 p-6">
       <div className="mb-6">
@@ -50,7 +43,7 @@ export function DashboardRevenueChart() {
       <div className="h-80 w-full">
         <ResponsiveContainer width="100%" height="100%">
           <BarChart
-            data={chartData}
+            data={data}
             margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
           >
             <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />

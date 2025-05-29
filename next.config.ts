@@ -1,11 +1,12 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-    experimental: {
+  experimental: {
     serverActions: {
-      bodySizeLimit: '20mb', // Increase to handle 10MB PDFs + form data
+      bodySizeLimit: "20mb", // Increase to handle 10MB PDFs + form data
     },
   },
+  serverExternalPackages: ["pdfkit"],
 };
 
 export default nextConfig;

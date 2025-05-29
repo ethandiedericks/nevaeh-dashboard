@@ -1,5 +1,4 @@
 import Link from "next/link";
-
 import {
   PlusIcon,
   CreditCardIcon,
@@ -7,16 +6,28 @@ import {
   ClockIcon,
   DollarSignIcon,
 } from "lucide-react";
+
 import { CustomButton } from "@/components/custom-button";
+import { DashboardMetricCard } from "@/components/dashboard-metric-card";
+import { DashboardRevenueChart } from "@/components/dashboard-revenue-card";
 import { DashboardContractStatus } from "@/components/dashboard-contract-status";
 import { DashboardRecentPayments } from "@/components/dashboard-recent-payments";
-import { DashboardRevenueChart } from "@/components/dashboard-revenue-card";
-import { DashboardMetricCard } from "@/components/dashboard-metric-card";
+import {
+  getContractMetrics,
+  getContractStatusSummary,
+} from "@/app/actions/contract";
+import { getMonthlyRevenue, getRecentPayments } from "@/app/actions/payment";
 
-export default function DashboardPage() {
+export default async function DashboardPage() {
+  const [metrics, statusSummary, revenue, recentPayments] = await Promise.all([
+    getContractMetrics(),
+    getContractStatusSummary(),
+    getMonthlyRevenue(),
+    getRecentPayments(),
+  ]);
+
   return (
     <>
-      {/* Header */}
       <div className="flex items-start justify-between mb-8">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">Dashboard</h1>
@@ -46,36 +57,36 @@ export default function DashboardPage() {
         </div>
       </div>
 
-      {/* Metrics Cards */}
+      {/* Metrics */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
         <DashboardMetricCard
           title="Active Contracts"
-          value="12"
-          subtitle="3 contracts with pending payments"
+          value={statusSummary.active}
+          subtitle={`${statusSummary.endingSoon} ending soon`}
           icon={FileTextIcon}
         />
         <DashboardMetricCard
           title="Total Revenue"
-          value="$48,750"
-          trend="+12% from last month"
+          value={`$${metrics.totalAmount.toLocaleString()}`}
+          trend="" // Optional: calculate this later
           icon={DollarSignIcon}
         />
         <DashboardMetricCard
           title="Pending Payments"
-          value="3"
+          value={statusSummary.endingSoon}
           subtitle="Due in the next 30 days"
           icon={ClockIcon}
         />
       </div>
 
-      {/* Charts and Recent Payments */}
+      {/* Charts and Payments */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2">
-          <DashboardRevenueChart />
+          <DashboardRevenueChart data={revenue} />
         </div>
         <div className="space-y-6">
-          <DashboardContractStatus />
-          <DashboardRecentPayments />
+          <DashboardContractStatus data={statusSummary} />
+          <DashboardRecentPayments data={recentPayments} />
         </div>
       </div>
     </>

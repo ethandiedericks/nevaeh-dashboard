@@ -7,6 +7,12 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum InvoiceStatus {
+  PAID
+  UNPAID
+  OVERDUE
+}
+
 model User {
   id          String     @id @default(uuid()) // Clerk user ID will be assigned manually
   clerkUserId String     @unique
@@ -48,14 +54,18 @@ model Payment {
 }
 
 model Invoice {
-  id            String   @id @default(uuid())
+  id            String        @id @default(uuid())
+  number        String        @unique // Invoice number like INV-20240529-001
   invoicePdfUrl String
   amount        Float
   issuedOn      DateTime
+  dueDate       DateTime
+  status        InvoiceStatus
   notes         String?
-  createdAt     DateTime @default(now())
-  contract      Contract @relation(fields: [contractId], references: [id])
-  contractId    String
+  createdAt     DateTime      @default(now())
+
+  contract   Contract @relation(fields: [contractId], references: [id])
+  contractId String
 
   @@index([contractId])
 }

@@ -1,8 +1,8 @@
 "use server";
 
-import { s3Client } from "@/lib/s3";
 import { PutObjectCommand } from "@aws-sdk/client-s3";
 import { randomUUID } from "crypto";
+import { s3 } from "@/lib/s3";
 
 interface UploadResult {
   url?: string;
@@ -33,7 +33,7 @@ export async function uploadContractPdf(file: File): Promise<UploadResult> {
       ContentType: file.type,
     });
 
-    await s3Client.send(command);
+    await s3.send(command);
 
     const url = `https://${process.env.AWS_S3_BUCKET_NAME}.s3.${process.env.AWS_REGION}.amazonaws.com/${fileName}`;
     return { url };

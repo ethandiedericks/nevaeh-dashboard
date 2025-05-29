@@ -2,13 +2,21 @@
 
 import { PieChart, Pie, Cell, ResponsiveContainer } from "recharts";
 
-const chartData = [
-  { name: "Active", value: 8, color: "#EF4444" },
-  { name: "Ending Soon", value: 3, color: "#F59E0B" },
-  { name: "Expired", value: 1, color: "#374151" },
-];
+interface Props {
+  data: {
+    active: number;
+    endingSoon: number;
+    expired: number;
+  };
+}
 
-export function DashboardContractStatus() {
+export function DashboardContractStatus({ data }: Props) {
+  const chartData = [
+    { name: "Active", value: data.active, color: "#EF4444" },
+    { name: "Ending Soon", value: data.endingSoon, color: "#F59E0B" },
+    { name: "Expired", value: data.expired, color: "#374151" },
+  ];
+
   return (
     <div className="bg-white rounded-lg border border-gray-200 p-6">
       <div className="mb-6">
@@ -40,7 +48,9 @@ export function DashboardContractStatus() {
               className="w-3 h-3 rounded-full mr-2"
               style={{ backgroundColor: entry.color }}
             />
-            <span className="text-sm text-gray-600">{entry.name}</span>
+            <span className="text-sm text-gray-600">
+              {entry.name}: {entry.value}
+            </span>
           </div>
         ))}
       </div>
