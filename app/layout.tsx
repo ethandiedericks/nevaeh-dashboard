@@ -16,8 +16,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Your App Name",
-  description: "Your app description",
+  title: "Nevaeh Management",
+  description: "One stop admin tool for retainer tracking",
 };
 
 export default function RootLayout({
